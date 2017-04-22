@@ -4,7 +4,7 @@
 .DS_Store
 Thumbs.db
 .env
-scripts/
+scripts/docker_*.sh
 scripts/DATA/
 README.md
 LICENSE

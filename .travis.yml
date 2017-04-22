@@ -7,7 +7,7 @@ services:
 
 # Install dependencies
 install:
-  - apt-get install curl
+  - sudo apt-get install -y curl httpie jq
 
 ## TODO: Also test the build before pushing out a release
 # Run the main build script
