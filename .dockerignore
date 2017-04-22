@@ -1,0 +1,10 @@
+.git/
+.git*
+.docker*
+.DS_Store
+Thumbs.db
+.env
+scripts/
+scripts/DATA/
+README.md
+LICENSE

@@ -1,0 +1,27 @@
+# Run as root
+sudo: required
+
+# Install Docker support
+services:
+  - docker
+
+# Install dependencies
+install:
+  - apt-get install curl
+
+## TODO: Also test the build before pushing out a release
+# Run the main build script
+script:
+  - bash scripts/docker_build_force.sh
+
+# Create a new tag and a new release
+after_success:
+  - git config --global user.email "builds@travis-ci.com"
+  - git config --global user.name "Travis CI"
+  - bash scripts/tag.sh
+  - bash scripts/release.sh
+
+# Don't build tags
+branches:
+  except:
+    - /^v[0-9]/
