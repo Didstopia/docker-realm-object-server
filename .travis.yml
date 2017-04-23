@@ -11,7 +11,7 @@ services:
 # Decrypt our deployment key
 before_install:
   - eval `ssh-agent -s`
-  - openssl aes-256-cbc -K $encrypted_f959f916ed88_key -iv $encrypted_f959f916ed88_iv -in .travis/github_deploy_key.enc -out -d | ssh-add -
+  - openssl aes-256-cbc -K $encrypted_f959f916ed88_key -iv $encrypted_f959f916ed88_iv -in .travis/github_deploy_key.enc -d | ssh-add -
 
 # Install dependencies
 install:
