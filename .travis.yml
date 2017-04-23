@@ -8,13 +8,13 @@ language: generic
 services:
   - docker
 
-# Prepare the environment
-before_install:
-  - bash .travis/setup.sh
-
 # Install dependencies
 install:
   - sudo apt-get install -y curl httpie jq
+
+# Prepare the environment
+before_script:
+  - bash .travis/setup.sh
 
 # Build and test the image
 script:
