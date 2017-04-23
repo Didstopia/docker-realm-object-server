@@ -2,13 +2,10 @@
 
 # Catch errors
 set -e
+set -o pipefail
 
 # Fix the working directory
 cd "${0%/*}"/../
-
-# Decrypt and add the GitHub deployment key
-eval `ssh-agent -s`
-openssl aes-256-cbc -K $encrypted_f959f916ed88_key -iv $encrypted_f959f916ed88_iv -in .travis/github_deploy_key.enc -d | ssh-add -
 
 # Setup the repo for deployment
 git remote set-url origin $GITHUB_REPO

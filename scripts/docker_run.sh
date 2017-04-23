@@ -2,6 +2,7 @@
 
 # Catch errors
 set -e
+set -o pipefail
 
 ./docker_build.sh
 

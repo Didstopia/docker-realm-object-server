@@ -2,6 +2,7 @@
 
 # Catch errors
 set -e
+set -o pipefail
 
 # Fix the working directory
 cd "${0%/*}"/../
@@ -44,5 +45,3 @@ else
 	echo "$GIT_TAG_CMD_OUTPUT"
 	exit 1
 fi
-
-exit 0

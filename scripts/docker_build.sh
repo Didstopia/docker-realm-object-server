@@ -2,6 +2,7 @@
 
 # Catch errors
 set -e
+set -o pipefail
 
 # Fix the working directory
 cd "${0%/*}"/../
