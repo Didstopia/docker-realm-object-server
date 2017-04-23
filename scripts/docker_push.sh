@@ -9,7 +9,7 @@ set -e
 cd "${0%/*}"/../
 
 # Optionally load environment variables from a file
-if [ ! -f ".env" ]; then source .env; fi
+if [ -f ".env" ]; then source .env; fi
 
 # Check if we're overriding the env var
 if [[ -z "${REALM_VERSION}" ]]; then
