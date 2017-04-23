@@ -23,8 +23,9 @@ install:
 script:
   - bash scripts/docker_build_force.sh
 
-# Create and push a new tag (if necessary)
+# Create and push a new tag
 after_success:
+  - git remote set-url origin $GITHUB_REPO.git
   - git config --global user.email "builds@travis-ci.com"
   - git config --global user.name "Travis CI"
   - bash scripts/tag.sh
