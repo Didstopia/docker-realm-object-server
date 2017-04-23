@@ -8,27 +8,22 @@ language: generic
 services:
   - docker
 
-# Decrypt our deployment key
+# Prepare the environment
 before_install:
-  - eval `ssh-agent -s`
-  - openssl aes-256-cbc -K $encrypted_f959f916ed88_key -iv $encrypted_f959f916ed88_iv -in .travis/github_deploy_key.enc -d | ssh-add -
+  - bash .travis/setup.sh
 
 # Install dependencies
 install:
   - sudo apt-get install -y curl httpie jq
 
-## TODO: Also test the build before pushing out a release
-
-# Run the main build script
+# Build and test the image
 script:
-  - bash scripts/docker_build_force.sh
+  - bash .travis/build.sh
+  - bash .travis/test.sh
 
 # Create and push a new tag
 after_success:
-  - git remote set-url origin $GITHUB_REPO
-  - git config --global user.email "builds@travis-ci.com"
-  - git config --global user.name "Travis CI"
-  - bash scripts/tag.sh
+  - bash .travis/deploy.sh
 
 # Don't build tags to avoid recursion
 branches:

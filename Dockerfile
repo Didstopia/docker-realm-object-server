@@ -3,7 +3,7 @@ MAINTAINER Didstopia <support@didstopia.com>
 
 # Build time environment variables
 ARG DEBIAN_FRONTEND=noninteractive
-ARG REALM_VERSION
+ARG REALM_VERSION=*
 
 # Exposed environment variables
 ENV REALM_REPOSITORY "https://packagecloud.io/install/repositories/realm/realm/script.deb.sh"

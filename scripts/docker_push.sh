@@ -6,9 +6,6 @@ set -e
 # Fix the working directory
 cd "${0%/*}"/../
 
-# Make sure the build is up to date
-./scripts/docker_build.sh
-
 # Optionally load environment variables from a file
 if [ -f ".env" ]; then source .env; fi
 
