@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Catch errors
+set -e
+
+sudo apt-getupdate && apt-get install -y curl httpie jq
