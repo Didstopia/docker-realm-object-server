@@ -1,3 +1,6 @@
+.travis/
+.travis*
+github_deploy_key*
 .git/
 .git*
 .docker*

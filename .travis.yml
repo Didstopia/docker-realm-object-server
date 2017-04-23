@@ -1,27 +1,35 @@
 # Run as root
 sudo: required
 
+# No specific environment necessary
+language: generic
+
 # Install Docker support
 services:
   - docker
+
+# Decrypt our deployment key
+before_install:
+  - eval `ssh-agent -s`
+  - openssl aes-256-cbc -K $encrypted_f959f916ed88_key -iv $encrypted_f959f916ed88_iv -in .travis/github_deploy_key.enc -out -d | ssh-add -
 
 # Install dependencies
 install:
   - sudo apt-get install -y curl httpie jq
 
 ## TODO: Also test the build before pushing out a release
+
 # Run the main build script
 script:
   - bash scripts/docker_build_force.sh
 
-# Create a new tag and a new release
+# Create and push a new tag (if necessary)
 after_success:
   - git config --global user.email "builds@travis-ci.com"
   - git config --global user.name "Travis CI"
   - bash scripts/tag.sh
-  - bash scripts/release.sh
 
-# Don't build tags
+# Don't build tags to avoid recursion
 branches:
   except:
     - /^v[0-9]/

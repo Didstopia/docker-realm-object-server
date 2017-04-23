@@ -2,6 +2,8 @@
 
 # Realm Object Server for Docker
 
+_NOTE: This uses the free Developer Edition of the Realm Object Server._
+
 **NOTE**: This is still a work in progress. If possible, do not use this in production yet.
 
 More information will be available soon, as there are still a few pieces of the puzzle missing.
