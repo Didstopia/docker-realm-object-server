@@ -16,7 +16,7 @@ git config --global user.email "builds@travis-ci.com"
 git config --global user.name "Travis CI"
 
 # Assign the current Realm Object Server version
-EXPORT REALM_VERSION=$(bash scripts/version.sh)
+export REALM_VERSION=$(bash scripts/version.sh)
 
 # Validate ROS version and bail out if it's not valid
 REGEX='^[0-9]+\.[0-9]+'
