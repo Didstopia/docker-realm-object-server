@@ -14,16 +14,16 @@ install:
 
 # Prepare the environment
 before_script:
-  - bash .travis/setup.sh
+  - .travis/setup.sh
 
 # Build and test the image
 script:
-  - bash .travis/build.sh
-  - bash .travis/test.sh
+  - .travis/build.sh
+  - .travis/test.sh
 
 # Create and push a new tag
 after_success:
-  - bash .travis/deploy.sh
+  - .travis/deploy.sh
 
 # Don't build tags to avoid recursion
 branches:
