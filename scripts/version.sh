@@ -23,4 +23,13 @@ PACKAGECLOUD_API_ENDPOINT="/v1/repos/realm/realm/package/deb/ubuntu/xenial/realm
 JSON=`http -a $PACKAGECLOUD_API_TOKEN: $PACKAGECLOUD_API_URL$PACKAGECLOUD_API_ENDPOINT`
 VERSION=`echo $JSON | jq --raw-output '.[-1].version'`
 RELEASE=`echo $JSON | jq --raw-output '.[-1].release'`
-echo -n $VERSION-$RELEASE
+REALM_VERSION=$VERSION-$RELEASE
+
+# Validate ROS version and bail out if it's not valid
+REGEX='^([0-9]+)((\.([0-9]+))+)?(\-)([0-9]+)((\.[0-9]+)+)?$'
+if [[ ! $REALM_VERSION =~ $REGEX ]]; then
+	echo "Version validation failed for $REALM_VERSION, bailing out.."
+	exit 1
+fi
+
+echo -n $REALM_VERSION

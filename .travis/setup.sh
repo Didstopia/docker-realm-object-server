@@ -15,12 +15,5 @@ git config --global user.name "Travis CI"
 # Assign the current Realm Object Server version
 export REALM_VERSION=$(bash scripts/version.sh)
 
-# Validate ROS version and bail out if it's not valid
-REGEX='^[0-9]+\.[0-9]+'
-if [[ ! $REALM_VERSION =~ $REGEX ]]; then
-	echo "Version validation failed for $REALM_VERSION, bailing out.."
-	exit 1
-fi
-
 # Login to Docker Hub
 docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
