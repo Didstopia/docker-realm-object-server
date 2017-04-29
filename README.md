@@ -2,8 +2,6 @@
 
 # Realm Object Server (Developer Edition) for Docker
 
-[![Install on DigitalOcean](http://installer.71m.us/button.svg)](http://installer.71m.us/install?url=https://github.com/didstopia/docker-realm-object-server)
-
 Provides a clean, easy and up to date way to run [Realm Object Server](https://realm.io/docs/realm-object-server/) inside a Docker container.
 
 ## How is this different?
