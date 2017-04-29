@@ -4,7 +4,7 @@
 
 [![Install on DigitalOcean](http://installer.71m.us/button.svg)](http://installer.71m.us/install?url=https://github.com/didstopia/docker-realm-object-server)
 
-Provides a clean, easy and up to date way to run Realm Object Server inside a Docker container.
+Provides a clean, easy and up to date way to run [Realm Object Server](https://realm.io/docs/realm-object-server/) inside a Docker container.
 
 ## How is this different?
 
@@ -23,7 +23,7 @@ Sample usage:
 docker run -p 9080:9080 -p 9443:9443 --name realm-object-server -v /srv/realm/data:/var/lib/realm/object-server -v /srv/realm/config:/etc/realm -d didstopia/realm-object-server:1.4.1-305
 ```
 
-When the image runs for the first time, it will create both a `configuration.yml` file under `/etc/realm`, as well as SSH keys for Realm Object Server.
+When the image runs for the first time, it will create both a `configuration.yml` file under `/etc/realm`, as well as SSH keys for _Realm Object Server_.
 
 By default, only HTTP is enabled (port 9080), so you'll probably want to edit the config file to, for example, only enable HTTPS (port 9443).
 

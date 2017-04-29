@@ -17,7 +17,7 @@ if [[ -z "${REALM_VERSION}" ]]; then
 fi
 
 # Create and push a new tag matching the new version
-GIT_TAG_CMD_OUTPUT="$(git tag --message="_This is an automated build._" --message="Realm Object Server version **$REALM_VERSION**." -a $REALM_VERSION 2>&1 || true)"
+GIT_TAG_CMD_OUTPUT="$(git tag --message="Realm Object Server version $REALM_VERSION." --message="This is an automated build." -a $REALM_VERSION 2>&1 || true)"
 if [[ "$GIT_TAG_CMD_OUTPUT" =~ "already exists" ]]; then
 	echo "Tag $REALM_VERSION already exists, skipping.."
 	exit 0
