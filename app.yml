@@ -1,0 +1,20 @@
+# http://installer.71m.us/install?url=https://github.com/didstopia/docker-realm-object-server
+name: RealmObjectServer
+image: ubuntu-16-04-x64
+min_size: 1gb
+config:
+  users:
+    - name: realm
+      groups: sudo
+      shell: /bin/bash
+      sudo: ['ALL=(ALL) NOPASSWD:ALL']
+  runcmd:
+    # Debugging
+    - whoami
+    # Install system updates
+    - sudo apt-get clean && sudo apt-get update
+    - sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade && sudo apt-get autoremove -y
+    - sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+    - sudo echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" > /etc/apt/sources.list.d/docker.list && sudo apt-get update
+    - sudo apt-get install docker-engine -y
+    - docker run -p 9080:9080 -p 9443:9443 --name realm-object-server -v /srv/realm/data:/var/lib/realm/object-server -v /srv/realm/config:/etc/realm -d didstopia/realm-object-server:1.4.1-305
