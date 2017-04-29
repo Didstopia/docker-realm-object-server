@@ -4,20 +4,17 @@
 set -e
 set -o pipefail
 
-# Fix the working directory
+# Switch to root
 cd "${0%/*}"/../
 
-# Optionally load environment variables from a file
-if [ -f ".env" ]; then source .env; fi
+# Setup environment
+export REALM_VERSION=$(.travis/version.sh)
 
-# Check if we're overriding the env var
-if [[ -z "${REALM_VERSION}" ]]; then
-	# Get the latest version
-	REALM_VERSION=`./scripts/version.sh`
-fi
+# Run environment validation
+.travis/validate.sh
 
 # Create and push a new tag matching the new version
-GIT_TAG_CMD_OUTPUT="$(git tag --message="Realm Object Server version $REALM_VERSION." --message="This is an automated build." -a $REALM_VERSION 2>&1 || true)"
+GIT_TAG_CMD_OUTPUT="$(git tag --message="Realm Object Server $REALM_VERSION (Developer Edition)" --message="NOTE: This is an automated build." -a $REALM_VERSION 2>&1 || true)"
 if [[ "$GIT_TAG_CMD_OUTPUT" =~ "already exists" ]]; then
 	echo "Tag $REALM_VERSION already exists, skipping.."
 	exit 0

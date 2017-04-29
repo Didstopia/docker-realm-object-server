@@ -4,16 +4,19 @@
 set -e
 set -o pipefail
 
-# Fix the working directory
+# Switch to root
 cd "${0%/*}"/../
+
+# Setup environment
+export REALM_VERSION=$(.travis/version.sh)
+
+# Run environment validation
+.travis/validate.sh
 
 # Setup the repo for deployment
 git remote set-url origin $GITHUB_REPO
 git config --global user.email "builds@travis-ci.com"
 git config --global user.name "Travis CI"
-
-# Assign the current Realm Object Server version
-export REALM_VERSION=$(bash scripts/version.sh)
 
 # Login to Docker Hub
 docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"

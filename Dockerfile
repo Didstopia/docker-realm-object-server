@@ -16,7 +16,6 @@ ENV REALM_VERSION=$REALM_VERSION
 
 # Copy scripts
 ADD run.sh /run.sh
-ADD scripts/version.sh /version.sh
 
 # Install apt-utils to fix additional apt-get warnings
 RUN apt-get update && apt-get install -y apt-utils
@@ -60,5 +59,21 @@ VOLUME /etc/realm
 EXPOSE 9080
 EXPOSE 9443
 
-# Setup the startup script
+# Set the startup script
 ENTRYPOINT /run.sh
+
+# Mark this as the production build
+LABEL TEST="FALSE"
+
+#--- TESTS BEGIN --- #
+
+# Copy scripts
+ADD run_tests.sh /run_tests.sh
+
+# Set the startup script
+ENTRYPOINT /run_tests.sh
+
+# Mark this as the test build
+LABEL TEST="TRUE"
+
+#---  TESTS END  --- #

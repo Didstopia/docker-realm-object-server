@@ -4,11 +4,17 @@
 set -e
 set -o pipefail
 
-# Fix the working directory
+# Switch to root
 cd "${0%/*}"/../
 
 # Optionally load environment variables from a file
 if [ -f ".env" ]; then source .env; fi
+
+# If we already have the version, return it instead
+if [[ ! -z "${REALM_VERSION}" ]]; then
+	echo -n $REALM_VERSION
+	exit 0
+fi
 
 # NOTE: Remember to use the following when output could
 #       potentially include env vars: > /dev/null 2>&1

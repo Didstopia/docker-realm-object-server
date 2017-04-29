@@ -34,6 +34,9 @@ Before you begin you'll need the following:
 - jq
 - packagecloud.io API token
 
+You should be able to follow the logic in `.travis.yml` for setting up the environment, as well as for building the image.
+Do note that the `Dockerfile` and the scripts contain special logic for handling production vs. test builds.
+
 Create a file named `.env`, which currently supports the following environment variables:
 
 ```
