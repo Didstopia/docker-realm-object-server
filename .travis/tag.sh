@@ -14,7 +14,7 @@ export REALM_VERSION=$(.travis/version.sh)
 .travis/validate.sh
 
 # Create and push a new tag matching the new version
-GIT_TAG_CMD_OUTPUT="$(git tag --message="Realm Object Server $REALM_VERSION (Developer Edition)" --message="NOTE: This is an automated build." -a $REALM_VERSION 2>&1 || true)"
+GIT_TAG_CMD_OUTPUT="$(git tag --message="Realm Object Server $REALM_VERSION" --message="NOTE: This is an automated build of the developer edition." -a $REALM_VERSION 2>&1 || true)"
 if [[ "$GIT_TAG_CMD_OUTPUT" =~ "already exists" ]]; then
 	echo "Tag $REALM_VERSION already exists, skipping.."
 	exit 0
