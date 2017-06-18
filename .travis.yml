@@ -34,6 +34,8 @@ after_success:
 branches:
   except:
     - /^[0-9]/
+  only:
+    - master
 
 # Notifications
 notifications:
@@ -43,8 +45,3 @@ notifications:
     on_success: change
     on_failure: always
     on_start: never
-
-# Branches to include
-branches:
-  only:
-    - master
