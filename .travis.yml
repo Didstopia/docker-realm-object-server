@@ -39,7 +39,7 @@ branches:
 notifications:
   webhooks:
     urls:
-      - https://webhooks.gitter.im/e/c92112924c79c629d5fc
+      - https://webhooks.gitter.im/e/0206a04e780389dff476
     on_success: change
     on_failure: always
     on_start: never
