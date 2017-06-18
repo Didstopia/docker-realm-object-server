@@ -14,4 +14,4 @@ export REALM_VERSION=$(.travis/version.sh)
 .travis/validate.sh
 
 # Build the Docker image (with tests)
-docker build --build-arg REALM_VERSION=$REALM_VERSION -t didstopia/realm-object-server:$REALM_VERSION-test .
+docker build --build-arg REALM_VERSION=$REALM_VERSION -t didstopia/realm-object-server:$REALM_VERSION-test -t didstopia/realm-object-server:latest .
