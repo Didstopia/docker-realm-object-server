@@ -11,7 +11,7 @@ services:
 # Decrypt and add the GitHub deployment key
 before_install:
   - eval `ssh-agent -s`
-  - openssl aes-256-cbc -K $encrypted_f959f916ed88_key -iv $encrypted_f959f916ed88_iv -in .travis/github_deploy_key.enc -d | ssh-add -
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then openssl aes-256-cbc -K $encrypted_f959f916ed88_key -iv $encrypted_f959f916ed88_iv -in .travis/github_deploy_key.enc -d | ssh-add -; fi'
 
 # Install dependencies
 install:
@@ -28,18 +28,18 @@ script:
 
 # Create and push a new tag
 after_success:
-  - .travis/deploy.sh
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./.travis/deploy.sh; fi'
 
-# Don't build tags to avoid recursion
+# Only build the master branch
 branches:
-  except:
-    - /^[0-9]/
+  only:
+    - master
 
 # Notifications
 notifications:
   webhooks:
     urls:
-      - https://webhooks.gitter.im/e/c92112924c79c629d5fc
+      - https://webhooks.gitter.im/e/0206a04e780389dff476
     on_success: change
     on_failure: always
     on_start: never

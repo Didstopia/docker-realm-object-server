@@ -19,4 +19,6 @@ git config --global user.email "builds@travis-ci.com"
 git config --global user.name "Travis CI"
 
 # Login to Docker Hub
-docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+	docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+fi
