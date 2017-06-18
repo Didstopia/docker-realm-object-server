@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Don't run on pull requests
+if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+	echo "Pull request detected, skipping push to Docker Hub.."
+	exit 0
+fi
+
 # Catch errors
 set -e
 set -o pipefail
