@@ -29,9 +29,13 @@ if .travis/tag.sh | grep -q 'already exists'; then
 	exit 0
 fi
 
-# Push the new version for Docker Hub
+# Push the new version to Docker Hub
 docker tag $BUILDID didstopia/realm-object-server:$REALM_VERSION
 docker push didstopia/realm-object-server:$REALM_VERSION
+
+# Push the latest version to Docker Hub
+docker tag $BUILDID didstopia/realm-object-server:latest
+docker push didstopia/realm-object-server:latest
 
 # Remove the test image
 docker rmi didstopia/realm-object-server:$REALM_VERSION-test
