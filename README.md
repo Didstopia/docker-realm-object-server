@@ -2,6 +2,8 @@
 
 # Realm Object Server (Developer Edition) for Docker
 
+[![Join the chat at https://gitter.im/Didstopia/docker-realm-object-server](https://badges.gitter.im/Didstopia/docker-realm-object-server.svg)](https://gitter.im/Didstopia/docker-realm-object-server?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Provides a clean, easy and up to date way to run [Realm Object Server](https://realm.io/docs/realm-object-server/) inside a Docker container.
 
 ## How is this different?
