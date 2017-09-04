@@ -11,22 +11,28 @@ In a nutshell: this project is fully automated.
 
 In addition to testing the latest version of _Realm Object Server_, we also generate new tags on both GitHub and Docker Hub, all on a daily basis, so everything is always up to date and properly tested.
 
-Note that the `latest` tag is not available for this image, as sticking to a specific version of _Realm Object Server_ makes much more sense for a production environment.
-
----
+Note that the `latest` tag should not be used. Instead, use a specific version of _Realm Object Server_, as that it is both safer and more stable when running in a production environment.
 
 ## Basic Usage
 
 Sample usage:
 ```
-docker run -p 9080:9080 -p 9443:9443 --name realm-object-server -v /srv/realm/data:/var/lib/realm/object-server -v /srv/realm/config:/etc/realm -d didstopia/realm-object-server:1.4.1-305
+docker run -d -p 9080:9080 -p 9443:9443 -v /srv/realm/data:/var/lib/realm/object-server -v /srv/realm/config:/etc/realm -v /srv/realm/auth:/usr/local/lib/realm/auth/providers --name realm-object-server didstopia/realm-object-server:1.8.3-83
 ```
 
 When the image runs for the first time, it will create both a `configuration.yml` file under `/etc/realm`, as well as SSH keys for _Realm Object Server_.
 
 By default, only HTTP is enabled (port 9080), so you'll probably want to edit the config file to, for example, only enable HTTPS (port 9443).
 
----
+## Backup/Restore
+
+By default, the Realm database is backed up to `/backups` twice a day. Currently the backup script only works if the database exists at `/var/lib/realm/object-server`.
+
+As automated backups are still a work in progress, you need to specifically enable automatic backups by setting the environment variable `ENABLE_BACKUPS="true"`.
+
+## Troubleshooting
+
+If you get `Error: Failed to resolve ':::9080'`, then you don't have IPv6 enabled (which you should have). If you for some reason can't enable IPv6, then you have to edit `configuration.yml`, replacing `listen_address: '::'` with `listen_address: '0.0.0.0'`.
 
 ## Contributing/Development
 
@@ -50,6 +56,14 @@ Note that overriding `REALM_VERSION` is optional, and will otherwise query the p
 You can skip the packagecloud.io API query for the version by setting `REALM_VERSION` to a valid _ROS_ version.
 
 PRs and issue submission are very welcome, and will be merged/fixed in a timely fashion.
+
+Alternatively you can build and run a development build with the following commands:
+```bash
+docker build -t didstopia/realm-object-server:development-test . && \
+BUILDID=`docker history didstopia/realm-object-server:development-test | grep "LABEL TEST=FALSE" | awk '{print $1}'` && \
+docker tag $BUILDID didstopia/realm-object-server:development && \
+docker run -it --rm -p 9080:9080 -p 9443:9443 -v $(pwd)/data/var/lib/realm-object-server:/var/lib/realm/object-server -v $(pwd)/data/etc/realm:/etc/realm -v $(pwd)/data/usr/local/lib/realm/auth/providers:/usr/local/lib/realm/auth/providers -v $(pwd)/data/backups:/backups --name realm-object-server didstopia/realm-object-server:development
+```
 
 ## Licenses
 

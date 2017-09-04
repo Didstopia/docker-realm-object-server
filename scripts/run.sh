@@ -1,17 +1,28 @@
 #!/usr/bin/env bash
 
+# Catch errors
 set -e
+
+# Function for waiting for backups to complete
+function waitForBackups()
+{
+	# Wait for the backup to complete
+	timeout 5s bash -c 'while [ -f "/var/run/realm-backup.lock" ]; do sleep 1; done'
+}
 
 # Define the exit handler
 exit_handler()
 {
 	echo "Shutdown signal received, shutting down.."
+
+	waitForBackups
+
+	# Sent CTRL-C to Realm Object Server
 	kill -SIGINT "$child"
-	exit 0
 }
 
 # Trap specific signals and forward to the exit handler
-trap 'exit_handler' SIGHUP SIGINT SIGQUIT SIGTERM
+trap 'exit_handler' SIGHUP SIGINT SIGTERM
 
 # Copy the default configuration in place if none exists
 # NOTE: Also disables logging to file, which removes log file paths,
@@ -30,15 +41,25 @@ if [ ! -f "$REALM_PUBLIC_KEY_FILE" ] || [ ! -f "$REALM_PRIVATE_KEY_FILE" ]; then
 	openssl rsa -in "$REALM_PRIVATE_KEY_FILE" -outform PEM -pubout -out "$REALM_PUBLIC_KEY_FILE"
 fi
 
+# Export environment variables
+env | sed 's/^\(.*\)$/export \1/g' > /environment.sh
+chmod +x /environment.sh
+
+# Start cron (enables scheduled tasks)
+cron
+
 # Start the server if it installed correctly
 if [ -f "$REALM_BINARY_FILE" ]; then
 	echo "Starting Realm Object Server.."
 	"$REALM_BINARY_FILE" -c "$REALM_CONFIGURATION_FILE" 2>&1 &
 	child=$!
 	wait "$child"
+	waitForBackups
+	exit $?
 else
 	echo "Could not find Realm Object Server binary at $REALM_BINARY_FILE"
 	echo "Please contact the maintainer of this image, as this isn't supposed to happen!"
 	echo ""
+	waitForBackups
 	exit 1
 fi

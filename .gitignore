@@ -3,4 +3,4 @@ github_deploy_key.pub
 .DS_Store
 Thumbs.db
 .env
-scripts/DATA/
+data/

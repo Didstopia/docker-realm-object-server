@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM didstopia/base:ubuntu-16.04
 MAINTAINER Didstopia <support@didstopia.com>
 
 # Build time environment variables
@@ -13,9 +13,7 @@ ENV REALM_DEFAULT_CONFIGURATION_FILE "/configuration.sample.yml"
 ENV REALM_PUBLIC_KEY_FILE "/etc/realm/token-signature.pub"
 ENV REALM_PRIVATE_KEY_FILE "/etc/realm/token-signature.key"
 ENV REALM_VERSION=$REALM_VERSION
-
-# Copy scripts
-ADD run.sh /run.sh
+ENV ENABLE_BACKUPS="false"
 
 # Install apt-utils to fix additional apt-get warnings
 RUN apt-get update && apt-get install -y apt-utils
@@ -26,7 +24,8 @@ RUN apt-get update && apt-get install -y \
 	curl \
 	httpie \
 	jq \
-	openssh-client
+	openssh-client \
+	cron
 
 # Fix locales
 RUN locale-gen en_US.UTF-8
@@ -47,12 +46,27 @@ RUN apt-get update && \
 RUN apt-get update && apt-get install -y \
 	realm-object-server-developer=$REALM_VERSION
 
+# Cleanup
+RUN apt-get clean && \
+	rm -rf /var/lib/apt/lists/*
+
 # Prepare the latest configuration for use as a default config
-RUN cp -fr $REALM_CONFIGURATION_FILE $REALM_DEFAULT_CONFIGURATION_FILE
+RUN cp -f $REALM_CONFIGURATION_FILE $REALM_DEFAULT_CONFIGURATION_FILE
+
+# Copy scripts
+ADD scripts/run.sh /run.sh
+ADD scripts/backup.sh /backup.sh
+RUN chmod +x /*.sh
+
+# Setup scheduled tasks
+ADD backup.cron /etc/cron.d/realm-backup
+RUN ln -sf /proc/1/fd/1 /var/log/cron.log
 
 # Expose supported volumes
 VOLUME /var/lib/realm/object-server
 VOLUME /etc/realm
+VOLUME /usr/local/lib/realm/auth/providers
+VOLUME /backups
 
 # Expose both the HTTP and HTTPS proxy ports
 # NOTE: The HTTPS proxy is disabled by default
@@ -60,20 +74,22 @@ EXPOSE 9080
 EXPOSE 9443
 
 # Set the startup script
-ENTRYPOINT /run.sh
+# NOTE: It's important to wrap the entrypoint/cmd in ["/command", "arg1", "arg2"],
+#       as that will correctly pass signals from Docker to the entrypoint/cmd
+ENTRYPOINT ["/run.sh"]
 
-# Mark this as the production build
+# Mark this as a production build
 LABEL TEST="FALSE"
 
 #--- TESTS BEGIN --- #
 
 # Copy scripts
-ADD run_tests.sh /run_tests.sh
+ADD scripts/run_tests.sh /run_tests.sh
 
 # Set the startup script
-ENTRYPOINT /run_tests.sh
+ENTRYPOINT ["/run_tests.sh"]
 
-# Mark this as the test build
+# Mark this as a test build
 LABEL TEST="TRUE"
 
 #---  TESTS END  --- #
