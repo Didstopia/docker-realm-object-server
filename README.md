@@ -26,7 +26,9 @@ By default, only HTTP is enabled (port 9080), so you'll probably want to edit th
 
 ## Backup/Restore
 
-_TODO_
+By default, the Realm database is backed up to `/backups` twice a day. Currently the backup script only works if the database exists at `/var/lib/realm/object-server`.
+
+As automated backups are still a work in progress, you need to specifically enable automatic backups by setting the environment variable `ENABLE_BACKUPS="true"`.
 
 ## Troubleshooting
 
@@ -57,10 +59,10 @@ PRs and issue submission are very welcome, and will be merged/fixed in a timely 
 
 Alternatively you can build and run a development build with the following commands:
 ```bash
-docker build -t didstopia/realm-object-server:development-test .
-BUILDID=`docker history didstopia/realm-object-server:development-test | grep "LABEL TEST=FALSE" | awk '{print $1}'`
-docker tag $BUILDID didstopia/realm-object-server:development
-docker run -it --rm -p 9080:9080 -p 9443:9443 -v $(pwd)/data/var/lib/realm-object-server:/var/lib/realm/object-server -v $(pwd)/data/etc/realm:/etc/realm -v $(pwd)/data/usr/local/lib/realm/auth/providers:/usr/local/lib/realm/auth/providers --name realm-object-server didstopia/realm-object-server:development
+docker build -t didstopia/realm-object-server:development-test . && \
+BUILDID=`docker history didstopia/realm-object-server:development-test | grep "LABEL TEST=FALSE" | awk '{print $1}'` && \
+docker tag $BUILDID didstopia/realm-object-server:development && \
+docker run -it --rm -p 9080:9080 -p 9443:9443 -v $(pwd)/data/var/lib/realm-object-server:/var/lib/realm/object-server -v $(pwd)/data/etc/realm:/etc/realm -v $(pwd)/data/usr/local/lib/realm/auth/providers:/usr/local/lib/realm/auth/providers -v $(pwd)/data/backups:/backups --name realm-object-server didstopia/realm-object-server:development
 ```
 
 ## Licenses

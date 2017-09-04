@@ -13,6 +13,7 @@ ENV REALM_DEFAULT_CONFIGURATION_FILE "/configuration.sample.yml"
 ENV REALM_PUBLIC_KEY_FILE "/etc/realm/token-signature.pub"
 ENV REALM_PRIVATE_KEY_FILE "/etc/realm/token-signature.key"
 ENV REALM_VERSION=$REALM_VERSION
+ENV ENABLE_BACKUPS="false"
 
 # Install apt-utils to fix additional apt-get warnings
 RUN apt-get update && apt-get install -y apt-utils
@@ -23,7 +24,8 @@ RUN apt-get update && apt-get install -y \
 	curl \
 	httpie \
 	jq \
-	openssh-client
+	openssh-client \
+	cron
 
 # Fix locales
 RUN locale-gen en_US.UTF-8
@@ -54,11 +56,17 @@ RUN cp -f $REALM_CONFIGURATION_FILE $REALM_DEFAULT_CONFIGURATION_FILE
 # Copy scripts
 ADD scripts/run.sh /run.sh
 ADD scripts/backup.sh /backup.sh
+RUN chmod +x /*.sh
+
+# Setup scheduled tasks
+ADD backup.cron /etc/cron.d/realm-backup
+RUN ln -sf /proc/1/fd/1 /var/log/cron.log
 
 # Expose supported volumes
 VOLUME /var/lib/realm/object-server
 VOLUME /etc/realm
 VOLUME /usr/local/lib/realm/auth/providers
+VOLUME /backups
 
 # Expose both the HTTP and HTTPS proxy ports
 # NOTE: The HTTPS proxy is disabled by default

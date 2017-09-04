@@ -4,11 +4,41 @@
 set -e
 set -o pipefail
 
-echo "WARNING: Backups not implemented"
+# Load environment variables
+if [ -f "/environment.sh" ]; then
+    source /environment.sh
+fi
 
-# realm-backup SOURCE TARGET
-# SOURCE is the data directory of the Realm Object Server (typically configured in /etc/realm/configuration.yml under storage.root_path).
-# TARGET is the directory where the backup files will be placed. This directory must be empty or absent when the backup starts for safety reasons.
-# After the backup command completes, TARGET will be a directory with the same sub directory structure as SOURCE and a backup of all individual Realms.
+# Check if backups are enabled
+if [[ "${ENABLE_BACKUPS,,}" != "true" ]]; then
+    exit 0
+fi
+
+echo "Running backup script.."
+
+# Create the lock file
+touch "/var/run/realm-backup.lock"
+
+## TODO: SOURCE should be read from the configuration file and not specified here statically
+
+# Create a temporary directory for this backup
+SOURCE="/var/lib/realm/object-server"
+TARGET=$(mktemp -d -t realm-backup-XXXXXXXX)
+
+# Run the backup command
+realm-backup "${SOURCE}" "${TARGET}" >/dev/null
+
+# Compress the backup
+cd "${TARGET}"
+tar -zcf "/backups/realm-$(date +"%Y-%m-%d_%H-%M-%S").tar.gz" *
+
+# Cleanup
+cd ../
+rm -fr "${TARGET}"
+rm -f "/var/run/realm-backup.lock"
+
+## TODO: Old backups should be automatically removed once older than X days (customizable)
+
+echo "Done backing up!"
 
 exit 0
