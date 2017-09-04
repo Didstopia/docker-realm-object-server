@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# Catch errors
 set -e
 
 # Define the exit handler
@@ -7,11 +8,10 @@ exit_handler()
 {
 	echo "Shutdown signal received, shutting down.."
 	kill -SIGINT "$child"
-	exit 0
 }
 
 # Trap specific signals and forward to the exit handler
-trap 'exit_handler' SIGHUP SIGINT SIGQUIT SIGTERM
+trap 'exit_handler' SIGHUP SIGINT SIGTERM
 
 # Copy the default configuration in place if none exists
 # NOTE: Also disables logging to file, which removes log file paths,
@@ -36,6 +36,7 @@ if [ -f "$REALM_BINARY_FILE" ]; then
 	"$REALM_BINARY_FILE" -c "$REALM_CONFIGURATION_FILE" 2>&1 &
 	child=$!
 	wait "$child"
+	exit $?
 else
 	echo "Could not find Realm Object Server binary at $REALM_BINARY_FILE"
 	echo "Please contact the maintainer of this image, as this isn't supposed to happen!"

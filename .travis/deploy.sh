@@ -1,8 +1,14 @@
 #!/bin/bash
 
 # Don't run on pull requests
-if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
+if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then
 	echo "Pull request detected, skipping push to Docker Hub.."
+	exit 0
+fi
+
+# Don't run on non-master branches
+if [[ "$TRAVIS_BRANCH" != "master" ]]; then
+	echo "Non-master branch detected, skipping push to Docker Hub.."
 	exit 0
 fi
 

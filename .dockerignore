@@ -7,7 +7,6 @@ github_deploy_key*
 .DS_Store
 Thumbs.db
 .env
-scripts/docker_*.sh
-scripts/DATA/
 README.md
 LICENSE
+data/
