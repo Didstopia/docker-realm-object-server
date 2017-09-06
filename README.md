@@ -26,7 +26,8 @@ By default, only HTTP is enabled (port 9080), so you'll probably want to edit th
 
 ## Backup/Restore
 
-By default, the Realm database is backed up to `/backups` twice a day. Currently the backup script only works if the database exists at `/var/lib/realm/object-server`.
+By default, the Realm database is backed up to `/backups` once a day. Currently the backup script only works if 
+the database exists at `/var/lib/realm/object-server`.
 
 As automated backups are still a work in progress, you need to specifically enable automatic backups by setting the environment variable `ENABLE_BACKUPS="true"`.
 
