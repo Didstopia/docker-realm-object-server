@@ -4,16 +4,6 @@
 set -e
 set -o pipefail
 
-# Load environment variables
-if [ -f "/environment.sh" ]; then
-    source /environment.sh
-fi
-
-# Check if backups are enabled
-if [[ "${ENABLE_BACKUPS,,}" != "true" ]]; then
-    exit 0
-fi
-
 echo "Running backup script.."
 
 # Create the lock file

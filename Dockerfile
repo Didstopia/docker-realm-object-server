@@ -1,4 +1,7 @@
+# Base image
 FROM didstopia/base:ubuntu-16.04
+
+# Maintainer information
 MAINTAINER Didstopia <support@didstopia.com>
 
 # Build time environment variables
@@ -12,26 +15,20 @@ ENV REALM_CONFIGURATION_FILE "/etc/realm/configuration.yml"
 ENV REALM_DEFAULT_CONFIGURATION_FILE "/configuration.sample.yml"
 ENV REALM_PUBLIC_KEY_FILE "/etc/realm/token-signature.pub"
 ENV REALM_PRIVATE_KEY_FILE "/etc/realm/token-signature.key"
-ENV REALM_VERSION=$REALM_VERSION
-ENV ENABLE_BACKUPS="false"
+ENV REALM_VERSION $REALM_VERSION
+ENV ENABLE_BACKUPS "false"
+ENV PGID 0
+ENV PUID 0
 
 # Install apt-utils to fix additional apt-get warnings
 RUN apt-get update && apt-get install -y apt-utils
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-	locales \
-	curl \
 	httpie \
 	jq \
 	openssh-client \
 	cron
-
-# Fix locales
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8  
-ENV LANGUAGE en_US:en  
-ENV LC_ALL en_US.UTF-8 
 
 # Add the Realm repository
 RUN ["/bin/bash", "-c", "set -e -o pipefail && curl -s $REALM_REPOSITORY | bash"]
@@ -48,7 +45,10 @@ RUN apt-get update && apt-get install -y \
 
 # Cleanup
 RUN apt-get clean && \
-	rm -rf /var/lib/apt/lists/*
+    rm -rf \
+        /var/lib/apt/lists/* \
+        /var/tmp/* \
+        /tmp/*
 
 # Prepare the latest configuration for use as a default config
 RUN cp -f $REALM_CONFIGURATION_FILE $REALM_DEFAULT_CONFIGURATION_FILE
@@ -74,8 +74,8 @@ EXPOSE 9080
 EXPOSE 9443
 
 # Set the startup script
-# NOTE: It's important to wrap the entrypoint/cmd in ["/command", "arg1", "arg2"],
-#       as that will correctly pass signals from Docker to the entrypoint/cmd
+# NOTE: It's important to wrap the cmd/entrypoint in ["/command", "arg1", "arg2"],
+#       as that will correctly pass signals from Docker to the cmd/entrypoint
 ENTRYPOINT ["/run.sh"]
 
 # Mark this as a production build

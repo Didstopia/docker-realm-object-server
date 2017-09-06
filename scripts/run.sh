@@ -1,7 +1,10 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Catch errors
 set -e
+
+# Run base image initialization
+bash /entrypoint.sh true
 
 # Function for waiting for backups to complete
 function waitForBackups()
@@ -41,12 +44,10 @@ if [ ! -f "$REALM_PUBLIC_KEY_FILE" ] || [ ! -f "$REALM_PRIVATE_KEY_FILE" ]; then
 	openssl rsa -in "$REALM_PRIVATE_KEY_FILE" -outform PEM -pubout -out "$REALM_PUBLIC_KEY_FILE"
 fi
 
-# Export environment variables
-env | sed 's/^\(.*\)$/export \1/g' > /environment.sh
-chmod +x /environment.sh
-
 # Start cron (enables scheduled tasks)
-cron
+if [[ "${ENABLE_BACKUPS,,}" == "true" ]]; then
+    cron
+fi
 
 # Start the server if it installed correctly
 if [ -f "$REALM_BINARY_FILE" ]; then
