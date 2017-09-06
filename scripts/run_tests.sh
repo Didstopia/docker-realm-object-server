@@ -4,6 +4,9 @@
 set -e
 set -o pipefail
 
+# Run base image initialization
+bash /entrypoint.sh true
+
 echo "WARNING: Tests not implemented"
 
 ## TODO: Test configuration
