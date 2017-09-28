@@ -33,6 +33,7 @@ trap 'exit_handler' SIGHUP SIGINT SIGTERM
 if [ ! -f "$REALM_CONFIGURATION_FILE" ]; then
 	echo "Config missing, applying defaults.."
 	sed -r 's/(path: )(.*)(\.log)(.*)/path: ""/g' $REALM_DEFAULT_CONFIGURATION_FILE > $REALM_CONFIGURATION_FILE
+	echo ""
 fi
 
 # Generate SSL keys if none exist
@@ -42,6 +43,7 @@ if [ ! -f "$REALM_PUBLIC_KEY_FILE" ] || [ ! -f "$REALM_PRIVATE_KEY_FILE" ]; then
 	rm -f "$REALM_PRIVATE_KEY_FILE"
 	openssl genrsa -out "$REALM_PRIVATE_KEY_FILE" 2048
 	openssl rsa -in "$REALM_PRIVATE_KEY_FILE" -outform PEM -pubout -out "$REALM_PUBLIC_KEY_FILE"
+	echo ""
 fi
 
 # Start cron (enables scheduled tasks)
@@ -49,9 +51,30 @@ if [[ "${ENABLE_BACKUPS,,}" == "true" ]]; then
     cron
 fi
 
+# Install npm modules (if specified)
+if [[ ! -z "${REALM_NPM_MODULES// }" ]]; then
+	echo "Installing/updating npm modules.."
+
+	# Strip spaces
+	MODULES="${REALM_NPM_MODULES// }"
+
+	# Separate modules by commas
+	IFS=',' read -r -a array <<< "$MODULES"
+
+	# Install each module
+	cd /usr/lib/nodejs/realm-object-server-developer
+	for element in "${array[@]}"
+	do
+		echo ""
+		PATH=/usr/lib/realm-object-server-developer/node/bin:$PATH npm install $element
+	done
+	echo ""
+fi
+
 # Start the server if it installed correctly
 if [ -f "$REALM_BINARY_FILE" ]; then
 	echo "Starting Realm Object Server.."
+	echo ""
 	"$REALM_BINARY_FILE" -c "$REALM_CONFIGURATION_FILE" 2>&1 &
 	child=$!
 	wait "$child"
