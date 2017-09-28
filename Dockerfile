@@ -16,6 +16,7 @@ ENV REALM_DEFAULT_CONFIGURATION_FILE "/configuration.sample.yml"
 ENV REALM_PUBLIC_KEY_FILE "/etc/realm/token-signature.pub"
 ENV REALM_PRIVATE_KEY_FILE "/etc/realm/token-signature.key"
 ENV REALM_VERSION $REALM_VERSION
+ENV REALM_NPM_MODULES ""
 ENV ENABLE_BACKUPS "false"
 ENV PGID 0
 ENV PUID 0

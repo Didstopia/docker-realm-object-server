@@ -24,9 +24,18 @@ When the image runs for the first time, it will create both a `configuration.yml
 
 By default, only HTTP is enabled (port 9080), so you'll probably want to edit the config file to, for example, only enable HTTPS (port 9443).
 
+## Using npm modules
+
+Realm Functions can use Node.js/npm modules, but they need to be installed first.
+
+You can specify an environment variable called `REALM_NPM_MODULES` with a value of comma separated npm modules you want to install and keep up to date, eg. `REALM_NPM_MODULES="request,mongoose"`.
+
+You can also specify versions for the modules, just like you would when using `npm install`, eg. `REALM_NPM_MODULES="mongoose@4.11.13"`.
+
 ## Backup/Restore
 
-By default, the Realm database is backed up to `/backups` twice a day. Currently the backup script only works if the database exists at `/var/lib/realm/object-server`.
+By default, the Realm database is backed up to `/backups` once a day. Currently the backup script only works if 
+the database exists at `/var/lib/realm/object-server`.
 
 As automated backups are still a work in progress, you need to specifically enable automatic backups by setting the environment variable `ENABLE_BACKUPS="true"`.
 

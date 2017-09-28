@@ -1,2 +1,2 @@
-* */12 * * * root /bin/bash /backup.sh >> /var/log/cron.log 2>&1
+0 0 * * * root /bin/bash /backup.sh >> /var/log/cron.log 2>&1
 # Mandatory blank line
