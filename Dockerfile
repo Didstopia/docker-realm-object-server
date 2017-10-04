@@ -1,48 +1,35 @@
 # Base image
-FROM didstopia/base:ubuntu-16.04
+FROM didstopia/base:nodejs-ubuntu-16.04
 
 # Maintainer information
 MAINTAINER Didstopia <support@didstopia.com>
 
 # Build time environment variables
 ARG DEBIAN_FRONTEND=noninteractive
-ARG REALM_VERSION=*
+ARG REALM_VERSION=alpha
+ARG USER=root
+ARG HOME="/tmp"
 
+ ## TODO: Fix the configuration env vars
 # Exposed environment variables
-ENV REALM_REPOSITORY "https://packagecloud.io/install/repositories/realm/realm/script.deb.sh"
-ENV REALM_BINARY_FILE "/usr/bin/realm-object-server"
+ENV REALM_BINARY_FILE "/npm/bin/ros"
 ENV REALM_CONFIGURATION_FILE "/etc/realm/configuration.yml"
 ENV REALM_DEFAULT_CONFIGURATION_FILE "/configuration.sample.yml"
-ENV REALM_PUBLIC_KEY_FILE "/etc/realm/token-signature.pub"
-ENV REALM_PRIVATE_KEY_FILE "/etc/realm/token-signature.key"
+ENV REALM_PUBLIC_KEY_FILE "/app/data/auth.pub"
+ENV REALM_PRIVATE_KEY_FILE "/app/data/auth.key"
 ENV REALM_VERSION $REALM_VERSION
 ENV REALM_NPM_MODULES ""
 ENV ENABLE_BACKUPS "false"
-ENV PGID 0
-ENV PUID 0
+ENV NPM_WORKDIR "/npm"
+ENV PGID 1000
+ENV PUID 1000
 
 # Install apt-utils to fix additional apt-get warnings
 RUN apt-get update && apt-get install -y apt-utils
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-	httpie \
-	jq \
-	openssh-client \
 	cron
-
-# Add the Realm repository
-RUN ["/bin/bash", "-c", "set -e -o pipefail && curl -s $REALM_REPOSITORY | bash"]
-
-# Install system updates
-RUN apt-get update && \
-	apt-get upgrade -y && \
-	apt-get dist-upgrade -y && \
-	apt-get autoremove -y
-
-# Install Realm Object Server
-RUN apt-get update && apt-get install -y \
-	realm-object-server-developer=$REALM_VERSION
 
 # Cleanup
 RUN apt-get clean && \
@@ -51,8 +38,20 @@ RUN apt-get clean && \
         /var/tmp/* \
         /tmp/*
 
+# To avoid `npm install -g` issues, it's recommended to set these env var and provide a location to store the global packages
+ENV NPM_CONFIG_PREFIX "$NPM_WORKDIR"
+ENV NPM_PACKAGES "$NPM_WORKDIR"
+ENV PATH="$NPM_PACKAGES/bin:$PATH"
+RUN mkdir -p "$NPM_WORKDIR"
+RUN chown -R $PUID:$PGID "$NPM_WORKDIR"
+
+# Install Realm Object Server
+#RUN su-exec docker npm install realm-object-server@$REALM_VERSION -g
+RUN npm install realm-object-server@$REALM_VERSION -g
+
+## TODO: Fix
 # Prepare the latest configuration for use as a default config
-RUN cp -f $REALM_CONFIGURATION_FILE $REALM_DEFAULT_CONFIGURATION_FILE
+#RUN cp -f $REALM_CONFIGURATION_FILE $REALM_DEFAULT_CONFIGURATION_FILE
 
 # Copy scripts
 ADD scripts/run.sh /run.sh
@@ -64,10 +63,7 @@ ADD backup.cron /etc/cron.d/realm-backup
 RUN ln -sf /proc/1/fd/1 /var/log/cron.log
 
 # Expose supported volumes
-VOLUME /var/lib/realm/object-server
-VOLUME /etc/realm
-VOLUME /usr/local/lib/realm/auth/providers
-VOLUME /backups
+VOLUME /app
 
 # Expose both the HTTP and HTTPS proxy ports
 # NOTE: The HTTPS proxy is disabled by default

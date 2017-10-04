@@ -19,6 +19,8 @@ fi
 # NOTE: Remember to use the following when output could
 #       potentially include env vars: > /dev/null 2>&1
 
+## TODO: Fix this by checking npm for the latest version instead
+
 if [[ -z "${PACKAGECLOUD_API_TOKEN}" ]]; then
 	echo "API token not found for packagecloud.io"
 	exit 1

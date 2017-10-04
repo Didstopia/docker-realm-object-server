@@ -45,33 +45,17 @@ If you get `Error: Failed to resolve ':::9080'`, then you don't have IPv6 enable
 
 ## Contributing/Development
 
-Before you begin you'll need the following:
-- httpie
-- jq
-- packagecloud.io API token
-
 You should be able to follow the logic in `.travis.yml` for setting up the environment, as well as for building the image.
 Do note that the `Dockerfile` and the scripts contain special logic for handling production vs. test builds.
 
-Create a file named `.env`, which currently supports the following environment variables:
-
-```
-PACKAGECLOUD_API_TOKEN=
-REALM_VERSION=
-```
-
-Note that overriding `REALM_VERSION` is optional, and will otherwise query the packagecloud.io API for the latest version. Overriding this is useful when you want to work with a specific version, and not worry about a potential new version coming out at the same time.
-
-You can skip the packagecloud.io API query for the version by setting `REALM_VERSION` to a valid _ROS_ version.
-
 PRs and issue submission are very welcome, and will be merged/fixed in a timely fashion.
 
-Alternatively you can build and run a development build with the following commands:
+You can build and run a development build with the following commands:
 ```bash
 docker build -t didstopia/realm-object-server:development-test . && \
 BUILDID=`docker history didstopia/realm-object-server:development-test | grep "LABEL TEST=FALSE" | awk '{print $1}'` && \
 docker tag $BUILDID didstopia/realm-object-server:development && \
-docker run -it --rm -p 9080:9080 -p 9443:9443 -v $(pwd)/data/var/lib/realm-object-server:/var/lib/realm/object-server -v $(pwd)/data/etc/realm:/etc/realm -v $(pwd)/data/usr/local/lib/realm/auth/providers:/usr/local/lib/realm/auth/providers -v $(pwd)/data/backups:/backups --name realm-object-server didstopia/realm-object-server:development
+docker run -it --rm -p 9080:9080 -p 9443:9443 -e ENABLE_BACKUPS="true" -e REALM_NPM_MODULES="mongoose,request" -v $(pwd)/data:/app --name realm-object-server didstopia/realm-object-server:development
 ```
 
 ## Licenses

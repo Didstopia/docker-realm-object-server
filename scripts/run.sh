@@ -32,17 +32,8 @@ trap 'exit_handler' SIGHUP SIGINT SIGTERM
 #       which in turn forces logging to stdout instead
 if [ ! -f "$REALM_CONFIGURATION_FILE" ]; then
 	echo "Config missing, applying defaults.."
-	sed -r 's/(path: )(.*)(\.log)(.*)/path: ""/g' $REALM_DEFAULT_CONFIGURATION_FILE > $REALM_CONFIGURATION_FILE
-	echo ""
-fi
-
-# Generate SSL keys if none exist
-if [ ! -f "$REALM_PUBLIC_KEY_FILE" ] || [ ! -f "$REALM_PRIVATE_KEY_FILE" ]; then
-	echo "Public or private key missing, generating new keys.."
-	rm -f "$REALM_PUBLIC_KEY_FILE"
-	rm -f "$REALM_PRIVATE_KEY_FILE"
-	openssl genrsa -out "$REALM_PRIVATE_KEY_FILE" 2048
-	openssl rsa -in "$REALM_PRIVATE_KEY_FILE" -outform PEM -pubout -out "$REALM_PUBLIC_KEY_FILE"
+	## TODO: Fix
+	#sed -r 's/(path: )(.*)(\.log)(.*)/path: ""/g' $REALM_DEFAULT_CONFIGURATION_FILE > $REALM_CONFIGURATION_FILE
 	echo ""
 fi
 
@@ -62,11 +53,10 @@ if [[ ! -z "${REALM_NPM_MODULES// }" ]]; then
 	IFS=',' read -r -a array <<< "$MODULES"
 
 	# Install each module
-	cd /usr/lib/nodejs/realm-object-server-developer
 	for element in "${array[@]}"
 	do
 		echo ""
-		PATH=/usr/lib/realm-object-server-developer/node/bin:$PATH npm install $element
+		npm install $element -g
 	done
 	echo ""
 fi
@@ -75,7 +65,10 @@ fi
 if [ -f "$REALM_BINARY_FILE" ]; then
 	echo "Starting Realm Object Server.."
 	echo ""
-	"$REALM_BINARY_FILE" -c "$REALM_CONFIGURATION_FILE" 2>&1 &
+	## TODO: Fix
+	cd /app
+	"$REALM_BINARY_FILE" start 2>&1 &
+	#"$REALM_BINARY_FILE" -c "$REALM_CONFIGURATION_FILE" 2>&1 &
 	child=$!
 	wait "$child"
 	waitForBackups

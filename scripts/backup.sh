@@ -12,15 +12,16 @@ touch "/var/run/realm-backup.lock"
 ## TODO: SOURCE should be read from the configuration file and not specified here statically
 
 # Create a temporary directory for this backup
-SOURCE="/var/lib/realm/object-server"
+SOURCE="/app"
 TARGET=$(mktemp -d -t realm-backup-XXXXXXXX)
 
 # Run the backup command
+## TODO: Can't find realm-backup anywhere (except in a node_modules dir)
 realm-backup "${SOURCE}" "${TARGET}" >/dev/null
 
 # Compress the backup
 cd "${TARGET}"
-tar -zcf "/backups/realm-$(date +"%Y-%m-%d_%H-%M-%S").tar.gz" *
+tar -zcf "/app/backups/realm-$(date +"%Y-%m-%d_%H-%M-%S").tar.gz" *
 
 # Cleanup
 cd ../
